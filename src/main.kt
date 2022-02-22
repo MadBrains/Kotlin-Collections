@@ -72,7 +72,7 @@ fun Shop.example(): Int? = customers.map { it.orders }.flatten().find { it.id ==
 
 //TODO
 
-/Преобразовать список клиентов в сет
+//Преобразовать список клиентов в сет
 fun Shop.getSetOfCustomers(): Set<Customer> = customers.toSet()
 
 // Вернуть сет городов в которых проживают клиенты
