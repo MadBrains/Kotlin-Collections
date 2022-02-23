@@ -73,37 +73,44 @@ fun Shop.example(): Int? = customers.map { it.orders }.flatten().find { it.id ==
 //TODO
 
 //Преобразовать список клиентов в сет
-fun Shop.getSetOfCustomers(): Set<Customer> = setOf()
+fun Shop.getSetOfCustomers(): Set<Customer> = this.customers.toSet()
 
 // Вернуть сет городов в которых проживают клиенты
-fun Shop.getCitiesCustomersAreFrom(): Set<City> = setOf()
+fun Shop.getCitiesCustomersAreFrom(): Set<City> = this.customers.map { it.city }.toSet()
 
 // Вернуть список клиентов из представленного города
-fun Shop.getCustomersFrom(city: City): List<Customer> = listOf()
+fun Shop.getCustomersFrom(city: City): List<Customer> =
+    this.customers.filter { it.city == city }.toList()
 
 // Вернуть true если хоть один клиент из выбранного города
-fun Shop.hasCustomerFrom(city: City): Boolean = false
+fun Shop.hasCustomerFrom(city: City): Boolean = this.customers.any { it.city == city }
 
 // Вернуть количество клментов из выбранного города
-fun Shop.countCustomersFrom(city: City): Int = 0
+fun Shop.countCustomersFrom(city: City): Int = this.customers.filter { it.city == city }.count()
 
 // Вернуть клиента из выбранного города или null, если нет таких
-fun Shop.findAnyCustomerFrom(city: City): Customer? = null
+fun Shop.findAnyCustomerFrom(city: City): Customer? = this.customers.firstOrNull { it.city == city }
 
 // Вернуть сет всех продуктов заказанных клиентом
-fun Customer.getOrderedProducts(): Set<Product> = setOf()
+fun Customer.getOrderedProducts(): Set<Product> = this.orders.flatMap { it.products }.toSet()
 
 // Отсортировать клиентов по количеству заказов от меньшего к большему
-fun Shop.getCustomersSortedByNumberOfOrders(): List<Customer> = listOf()
+fun Shop.getCustomersSortedByNumberOfOrders(): List<Customer> =
+    this.customers.sortedBy { it.orders.size }
 
 // Вернуть словарь в котором названия городов являются ключами, а значениями - сет клиентов, проживающих в этом городе
-fun Shop.groupCustomersByCity(): Map<String, Set<Customer>> = mapOf()
+fun Shop.groupCustomersByCity(): Map<String, Set<Customer>> =
+    this.customers.map { it.city.title to mutableSetOf(it) }.toMap()
 
 // Вернуть сет клиентов, у которых не доставленных заказов больше чем заказанных
-fun Shop.getCustomersWithMoreUndeliveredOrdersThanDelivered(): Set<Customer> = setOf()
+fun Shop.getCustomersWithMoreUndeliveredOrdersThanDelivered(): Set<Customer> =
+    this.customers.filter { it.orders.filter { !it.isDelivered }.size > it.orders.filter { it.isDelivered }.size }
+        .toSet()
 
 // Вернуть наиболее дорогой продукт из всех доставленных
-fun Customer.getMostExpensiveDeliveredProduct(): Product? = null
+fun Customer.getMostExpensiveDeliveredProduct(): Product? =
+    this.orders.filter { it.isDelivered }.flatMap { it.products }.maxByOrNull { it.price }
 
 // Вернуть число - сколько раз был заказан выбранный продукт
-fun Shop.getNumberOfTimesProductWasOrdered(product: Product): Int = 0
+fun Shop.getNumberOfTimesProductWasOrdered(product: Product): Int =
+    this.customers.map { it.orders.flatMap { it.products }.filter { it == product } }.size
