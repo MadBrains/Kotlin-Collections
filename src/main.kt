@@ -109,4 +109,4 @@ fun Customer.getMostExpensiveDeliveredProduct(): Product? =
 
 // Вернуть число - сколько раз был заказан выбранный продукт
 fun Shop.getNumberOfTimesProductWasOrdered(product: Product): Int =
-    customers.flatMap { it.orders }.flatMap { it.products }.count { it.name == product.name }
+    customers.flatMap { it.orders }.count { it.products.contains(product) }
