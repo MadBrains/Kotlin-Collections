@@ -73,37 +73,44 @@ fun Shop.example(): Int? = customers.map { it.orders }.flatten().find { it.id ==
 //TODO
 
 //Преобразовать список клиентов в сет
-fun Shop.getSetOfCustomers(): Set<Customer> = setOf()
+fun Shop.getSetOfCustomers(): Set<Customer> = customers.toSet()
 
 // Вернуть сет городов в которых проживают клиенты
-fun Shop.getCitiesCustomersAreFrom(): Set<City> = setOf()
+fun Shop.getCitiesCustomersAreFrom(): Set<City> = customers.map{it.city}.toSet()
 
 // Вернуть список клиентов из представленного города
-fun Shop.getCustomersFrom(city: City): List<Customer> = listOf()
+fun Shop.getCustomersFrom(city: City): List<Customer> = customers.filter { it.city == city }
 
 // Вернуть true если хоть один клиент из выбранного города
-fun Shop.hasCustomerFrom(city: City): Boolean = false
+fun Shop.hasCustomerFrom(city: City): Boolean = customers.any{it.city == city}
 
-// Вернуть количество клментов из выбранного города
-fun Shop.countCustomersFrom(city: City): Int = 0
+// Вернуть количество клиентов из выбранного города
+fun Shop.countCustomersFrom(city: City): Int = customers.count { it.city == city }
 
 // Вернуть клиента из выбранного города или null, если нет таких
-fun Shop.findAnyCustomerFrom(city: City): Customer? = null
+fun Shop.findAnyCustomerFrom(city: City): Customer? = customers.firstOrNull {it.city == city}
 
 // Вернуть сет всех продуктов заказанных клиентом
-fun Customer.getOrderedProducts(): Set<Product> = setOf()
+fun Customer.getOrderedProducts(): Set<Product> = orders.flatMap{it.products}.toSet()
 
 // Отсортировать клиентов по количеству заказов от меньшего к большему
-fun Shop.getCustomersSortedByNumberOfOrders(): List<Customer> = listOf()
+fun Shop.getCustomersSortedByNumberOfOrders(): List<Customer> = customers.sortedBy { it.orders.size }
 
 // Вернуть словарь в котором названия городов являются ключами, а значениями - сет клиентов, проживающих в этом городе
-fun Shop.groupCustomersByCity(): Map<String, Set<Customer>> = mapOf()
+fun Shop.groupCustomersByCity(): Map<String, Set<Customer>> = customers.groupBy { it.city.title }.mapValues { it.value.toSet() }
 
-// Вернуть сет клиентов, у которых не доставленных заказов больше чем заказанных
-fun Shop.getCustomersWithMoreUndeliveredOrdersThanDelivered(): Set<Customer> = setOf()
+// Вернуть сет клиентов, у которых недоставленных заказов больше чем доставленных
+fun Shop.getCustomersWithMoreUndeliveredOrdersThanDelivered(): Set<Customer> =
+    //customers.filter { client -> client.orders.count {order -> !order.isDelivered } > client.orders.count {order -> order.isDelivered } }.toSet()
+    customers.filter { 
+        val (del, undel) = it.orders.partition { it.isDelivered } 
+        undel.count() > del.count() 
+    }.toSet() 
 
 // Вернуть наиболее дорогой продукт из всех доставленных
-fun Customer.getMostExpensiveDeliveredProduct(): Product? = null
+fun Customer.getMostExpensiveDeliveredProduct(): Product? =
+    orders.filter{it.isDelivered}.flatMap().maxByOrNull { it.price }
 
 // Вернуть число - сколько раз был заказан выбранный продукт
-fun Shop.getNumberOfTimesProductWasOrdered(product: Product): Int = 0
+fun Shop.getNumberOfTimesProductWasOrdered(product: Product): Int =
+    customers.flatMap { it.orders }.flatMap { it.products }.count { it == product }
