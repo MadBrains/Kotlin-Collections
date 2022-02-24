@@ -41,10 +41,10 @@ fun main() {
         Order(9, listOf(product3,product6), false))
     )
 
-    val shop = Shop("Test", listOf(customer1,customer2,customer3))
+    val shop = Shop("Test", listOf(customer1, customer2, customer3))
 
-    println(shop.getSetOfCustomers() == setOf(customer1,customer2,customer3))
-    println(shop.getCitiesCustomersAreFrom() == setOf(city1,city2,city3))
+    println(shop.getSetOfCustomers() == setOf(customer1, customer2, customer3))
+    println(shop.getCitiesCustomersAreFrom() == setOf(city1, city2, city3))
     println(shop.getCustomersFrom(city1) == listOf(customer1))
     println(shop.hasCustomerFrom(city2))
     println(shop.countCustomersFrom(city1) == 1)
@@ -109,4 +109,4 @@ fun Customer.getMostExpensiveDeliveredProduct(): Product? =
 
 // Вернуть число - сколько раз был заказан выбранный продукт
 fun Shop.getNumberOfTimesProductWasOrdered(product: Product): Int =
-    customers.flatMap { it.orders }.count { it.products.contains(product) }
+    customers.flatMap { it.orders }.flatMap { it.products }.count { it == product }
