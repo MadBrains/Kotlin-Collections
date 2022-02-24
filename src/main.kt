@@ -86,7 +86,7 @@ fun Shop.getCustomersFrom(city: City): List<Customer> = customers.filter { it.ci
 fun Shop.hasCustomerFrom(city: City): Boolean = customers.any { it.city == city }
 
 // Вернуть количество клментов из выбранного города
-fun Shop.countCustomersFrom(city: City): Int = customers.filter { it.city == city }.count()
+fun Shop.countCustomersFrom(city: City): Int = customers.count { it.city == city }
 
 // Вернуть клиента из выбранного города или null, если нет таких
 fun Shop.findAnyCustomerFrom(city: City): Customer? = customers.firstOrNull { it.city == city }
