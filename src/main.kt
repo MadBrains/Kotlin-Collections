@@ -9,9 +9,6 @@ data class Customer(val name: String, val city: City, val orders: List<Order>)
 data class Shop(val name: String, val customers: List<Customer>)
 
 
-
-
-
 fun main() {
     val city1 = City("Ulsk")
     val city2 = City("Piter")
@@ -44,10 +41,10 @@ fun main() {
         Order(9, listOf(product3,product6), false))
     )
 
-    val shop = Shop("Test", listOf(customer1,customer2,customer3))
+    val shop = Shop("Test", listOf(customer1, customer2, customer3))
 
-    println(shop.getSetOfCustomers() == setOf(customer1,customer2,customer3))
-    println(shop.getCitiesCustomersAreFrom() == setOf(city1,city2,city3))
+    println(shop.getSetOfCustomers() == setOf(customer1, customer2, customer3))
+    println(shop.getCitiesCustomersAreFrom() == setOf(city1, city2, city3))
     println(shop.getCustomersFrom(city1) == listOf(customer1))
     println(shop.hasCustomerFrom(city2))
     println(shop.countCustomersFrom(city1) == 1)
@@ -73,37 +70,43 @@ fun Shop.example(): Int? = customers.map { it.orders }.flatten().find { it.id ==
 //TODO
 
 //Преобразовать список клиентов в сет
-fun Shop.getSetOfCustomers(): Set<Customer> = setOf()
+fun Shop.getSetOfCustomers(): Set<Customer> = customers.toSet()
 
 // Вернуть сет городов в которых проживают клиенты
-fun Shop.getCitiesCustomersAreFrom(): Set<City> = setOf()
+fun Shop.getCitiesCustomersAreFrom(): Set<City> = customers.map { it.city }.toSet()
 
 // Вернуть список клиентов из представленного города
-fun Shop.getCustomersFrom(city: City): List<Customer> = listOf()
+fun Shop.getCustomersFrom(city: City): List<Customer> = customers.filter { it.city == city }
 
 // Вернуть true если хоть один клиент из выбранного города
-fun Shop.hasCustomerFrom(city: City): Boolean = false
+fun Shop.hasCustomerFrom(city: City): Boolean = customers.any { it.city == city }
 
-// Вернуть количество клментов из выбранного города
-fun Shop.countCustomersFrom(city: City): Int = 0
+// Вернуть количество клиентов из выбранного города
+fun Shop.countCustomersFrom(city: City): Int = customers.count { it.city == city }
 
 // Вернуть клиента из выбранного города или null, если нет таких
-fun Shop.findAnyCustomerFrom(city: City): Customer? = null
+fun Shop.findAnyCustomerFrom(city: City): Customer? = customers.firstOrNull { it.city == city }
 
 // Вернуть сет всех продуктов заказанных клиентом
-fun Customer.getOrderedProducts(): Set<Product> = setOf()
+fun Customer.getOrderedProducts(): Set<Product> = orders.flatMap { it.products }.toSet()
 
 // Отсортировать клиентов по количеству заказов от меньшего к большему
-fun Shop.getCustomersSortedByNumberOfOrders(): List<Customer> = listOf()
+fun Shop.getCustomersSortedByNumberOfOrders(): List<Customer> =
+    customers.sortedBy { it.orders.size }
 
 // Вернуть словарь в котором названия городов являются ключами, а значениями - сет клиентов, проживающих в этом городе
-fun Shop.groupCustomersByCity(): Map<String, Set<Customer>> = mapOf()
+fun Shop.groupCustomersByCity(): Map<String, Set<Customer>> =
+    customers.groupBy { it.city.title }.mapValues { it.value.toSet() }
 
 // Вернуть сет клиентов, у которых не доставленных заказов больше чем заказанных
-fun Shop.getCustomersWithMoreUndeliveredOrdersThanDelivered(): Set<Customer> = setOf()
+fun Shop.getCustomersWithMoreUndeliveredOrdersThanDelivered(): Set<Customer> =
+    customers.filter { c -> c.orders.count { !it.isDelivered } > c.orders.count { it.isDelivered } }
+        .toSet()
 
 // Вернуть наиболее дорогой продукт из всех доставленных
-fun Customer.getMostExpensiveDeliveredProduct(): Product? = null
+fun Customer.getMostExpensiveDeliveredProduct(): Product? =
+    orders.filter { it.isDelivered }.flatMap { it.products }.maxByOrNull { it.price }
 
 // Вернуть число - сколько раз был заказан выбранный продукт
-fun Shop.getNumberOfTimesProductWasOrdered(product: Product): Int = 0
+fun Shop.getNumberOfTimesProductWasOrdered(product: Product): Int =
+    customers.flatMap { it.orders }.flatMap { it.products }.count { it == product }
