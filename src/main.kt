@@ -70,6 +70,7 @@ fun main() {
 //Пример как может выглядеть реализация (в сложном кейсе)
 fun Shop.example(): Int? = customers.map { it.orders }.flatten().find { it.id == 3 }?.id
 
+
 //TODO
 
 //Преобразовать список клиентов в сет
