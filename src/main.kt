@@ -101,12 +101,16 @@ fun Shop.groupCustomersByCity(): Map<String, Set<Customer>> = customers.groupBy 
 
 // Вернуть сет клиентов, у которых недоставленных заказов больше чем доставленных
 fun Shop.getCustomersWithMoreUndeliveredOrdersThanDelivered(): Set<Customer> =
-    customers.filter { client -> client.orders.count {order -> !order.isDelivered } > client.orders.count {order -> order.isDelivered } }.toSet()
+    //customers.filter { client -> client.orders.count {order -> !order.isDelivered } > client.orders.count {order -> order.isDelivered } }.toSet()
+    customers.filter { 
+        val (del, undel) = it.orders.partition { it.isDelivered } 
+        undel.count() > del.count() 
+    }.toSet() 
 
 // Вернуть наиболее дорогой продукт из всех доставленных
 fun Customer.getMostExpensiveDeliveredProduct(): Product? =
-    orders.mapNotNull{if(it.isDelivered) it.products else null}.flatten().maxByOrNull { it.price }
+    orders.filter{it.isDelivered}.flatMap().maxByOrNull { it.price }
 
 // Вернуть число - сколько раз был заказан выбранный продукт
 fun Shop.getNumberOfTimesProductWasOrdered(product: Product): Int =
-    customers.asSequence().flatMap{it.orders}.flatMap { it.products }.groupingBy { it }.eachCount().getOrDefault(product, 0)
+    customers.flatMap { it.orders }.flatMap { it.products }.count { it == product }
